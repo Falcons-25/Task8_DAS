@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/graph.css') }}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.5.0/nouislider.min.css">
+    
+    <title>Altitude Graph</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@latest"></script>
+
+</head>
+<body>
+  <div class="taskbar">
+    <div class="index-btn-wrapper">
+      <button id="indexopen" onclick="openIndexPage()"><b>Back to DAS</b></button>
+    </div>
+    <img src="{{ url_for('static', filename='images/logo_final.png') }}" alt="Logo" class="logo"/>
+  </div>
+  <div class="chart-container">
+    <canvas id="altitudeChart2"></canvas>
+    <!-- <div id="slider">hello</div> -->
+  </div>
+  <div id="bottom-button-container">
+    <button id="btn1">Button 1</button>
+    <button id="btn2">Button 2</button>
+    <button id="btn3">Button 3</button>
+    <button id="btn4">Button 4</button>
+    <button id="btn5">Button 5</button>
+    <button id="btn6">Button 6</button>
+  </div>
+  <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
+</body>
+</html>
