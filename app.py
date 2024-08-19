@@ -28,24 +28,29 @@ def read_from_arduino():
         try:
             data = ser.readline().decode('utf-8').strip()
             parts = data.split(';')
-            if len(parts) >= 10:
+            if len(parts) >= 9:
                 try:
                     tracker1_data = {
-                        'latitude': float(parts[0]),
-                        'longitude': float(parts[1]),
-                        'heading': float(parts[4]),
-                        'altitude': float(parts[6]),
-                        'speed': float(parts[8]),
-                        'battery': float(parts[10]),
+                        'latitude': float(parts[1]),
+                        'longitude': float(parts[2]),
+                        'heading': float(parts[3]),
+                        'altitude': float(parts[0]),
+                        'speed': float(parts[4]),
+                        'battery': float(parts[5]),
+                        'pitch':float(parts[6]),
+                        'bank_angle':float(parts[7]),
+                        'number_of_circles':int(parts[8]),
+                        'circles':[tuple(parts[9*i:9*(i+1)]) for i in range(1, len(parts)//9)],
                     }
                     tracker2_data = {   
-                        'latitude': float(parts[2]),
-                        'longitude': float(parts[3]),
-                        'heading': float(parts[5]),
-                        'altitude': float(parts[7]),
-                        'speed': float(parts[9]),   
-                        'battery': float(parts[11]),
+                        'latitude': float(parts[1]),
+                        'longitude': float(parts[2]),
+                        'heading': float(parts[3]),
+                        'altitude': float(parts[0]),
+                        'speed': float(parts[4]),   
+                        'battery': float(parts[5]),
                     }
+                    
                     # Only add data if conversion was successful
                     gps_data['tracker1'].append(tracker1_data)
                     gps_data['tracker2'].append(tracker2_data)
