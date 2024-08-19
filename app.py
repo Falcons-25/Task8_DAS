@@ -28,7 +28,7 @@ def read_from_arduino():
         try:
             data = ser.readline().decode('utf-8').strip()
             parts = data.split(';')
-            if len(parts) >= 12:
+            if len(parts) >= 9:
                 try:
                     tracker1_data = {
                         'latitude': float(parts[1]),
