@@ -43,6 +43,7 @@ def read_from_arduino():
                         'bank_angle': float(parts[7]),
                         'number_of_circles': int(parts[8]),
                         'circles': [tuple(parts[9*i:9*(i+1)]) for i in range(1, len(parts)//9)],
+                        'ok': True
                     }
                     gps_data['tracker1'].append(tracker1_data)
                 except ValueError as ve:
@@ -64,6 +65,7 @@ def read_from_arduino():
                         'altitude': float(parts[0]),
                         'speed': float(parts[4]),
                         'battery': float(parts[5]),
+                        'ok': True
                     }
                     gps_data['tracker2'].append(tracker2_data)
                 except ValueError as ve:
@@ -87,11 +89,17 @@ def altitude_graph():
 def data():
     data = read_from_arduino()
     current_time = get_current_time()
-    if data:
+    
+    tracker1_ok = data['tracker1'][-1]['ok'] if data['tracker1'] else False
+    tracker2_ok = data['tracker2'][-1]['ok'] if data['tracker2'] else False
+
+    if tracker1_ok and tracker2_ok:
         time.append(current_time)  # Store the timestamp
         response = {'timestamps': time, **data}
         return jsonify(response)
+    
     return jsonify({'timestamps': time})
+
 
 @app.route('/releasepada')
 def releasepada():
@@ -106,7 +114,7 @@ def releasepada():
 @app.route('/isPadaReleased')
 def isPadaReleased():
     global padaReleaseAlt, padaReleaseTime
-    if isPadaReleased:
+    if isPadaReleased==True:
         return jsonify(altitude=padaReleaseAlt, time=padaReleaseTime)
     else:
         return jsonify(altitude=None, time=None)

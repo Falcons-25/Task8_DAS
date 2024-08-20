@@ -180,7 +180,7 @@ async function fetchDataAndUpdate() {
     tracker2Speed = tracker2Coords[tracker2Coords.length - 1]?.speed || 0;
     tracker2Battery = tracker2Coords[tracker2Coords.length - 1]?.battery || 0;
 
-    console.log(circles);
+    // console.log(circles);
 
     // Update Map
     plotPaths(tracker1Coords, tracker2Coords);
@@ -232,7 +232,7 @@ function updateChart(tracker1Altitude, storedCurrentTime) {
 
   // Add new data point with the provided timestamp
   dataPoints1.push({ x: timestamp, y: tracker1Altitude });
-  console.log("Data Points 1: ", dataPoints1);
+  // console.log("Data Points 1: ", dataPoints1);
 
   // Maintain a 30-second window
   const thirtySecondsAgo = timestamp - 30000;
@@ -296,7 +296,7 @@ async function releasePada() {
 
   const response = await fetch(`/releasepada?altitude=${releaseAlt}&time=${storedCurrentTime}`);
   const resp = await response.json();
-  console.log(resp);
+  // console.log(resp);
 
   // Update the event marker and vertical line
   updateEventMarker(toMs(storedCurrentTime), releaseAlt);
@@ -308,7 +308,7 @@ async function releasePada() {
 async function isPadaReleased() {
   const response = await fetch('/isPadaReleased');
   const resp = await response.json();
-  console.log(resp);
+  // console.log(resp);
   if (resp.altitude !== null) {
     padaReleaseAlt=resp.altitude;
     padaReleaseTime=resp.time;
