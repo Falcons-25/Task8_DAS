@@ -12,22 +12,24 @@ padaReleaseTime = None
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Attempt to open the serial port
+# Initialize serial connections
 try:
-    ser = serial.Serial('COM8', 9600, timeout=1)
+    ser_tracker1 = serial.Serial('COM17', 9600, timeout=1)  # Port for tracker1 data
+    ser_tracker2 = serial.Serial('COM8', 9600, timeout=1)  # Port for tracker2 data
 except serial.SerialException as e:
     logging.error(f"Serial port error: {e}")
-    ser = None
+    ser_tracker1 = ser_tracker2 = None
 
 # Store GPS data
 time = []
 gps_data = {'tracker1': [], 'tracker2': []}
 
 def read_from_arduino():
-    if ser and ser.in_waiting > 0:
+    if ser_tracker1 and ser_tracker1.in_waiting > 0:
         try:
-            data = ser.readline().decode('utf-8').strip()
-            parts = data.split(';')
+            data = ser_tracker1.readline().decode('utf-8').strip()
+            print("Tracker1: " + data + "\n")
+            parts = data.split(',')
             if len(parts) >= 9:
                 try:
                     tracker1_data = {
@@ -37,36 +39,44 @@ def read_from_arduino():
                         'altitude': float(parts[0]),
                         'speed': float(parts[4]),
                         'battery': float(parts[5]),
-                        'pitch':float(parts[6]),
-                        'bank_angle':float(parts[7]),
-                        'number_of_circles':int(parts[8]),
-                        'circles':[tuple(parts[9*i:9*(i+1)]) for i in range(1, len(parts)//9)],
+                        'pitch': float(parts[6]),
+                        'bank_angle': float(parts[7]),
+                        'number_of_circles': int(parts[8]),
+                        'circles': [tuple(parts[9*i:9*(i+1)]) for i in range(1, len(parts)//9)],
                     }
-                    tracker2_data = {   
+                    gps_data['tracker1'].append(tracker1_data)
+                except ValueError as ve:
+                    logging.error(f"Value error during conversion for tracker1: {ve}")
+        except Exception as e:
+            logging.error(f"Error reading from tracker1: {e}")            
+
+    if ser_tracker2 and ser_tracker2.in_waiting > 0:
+        try:
+            data = ser_tracker2.readline().decode('utf-8').strip()
+            print("Tracker2: " + data + "\n")
+            parts = data.split(',')
+            if len(parts) >= 6:
+                try:
+                    tracker2_data = {
                         'latitude': float(parts[1]),
                         'longitude': float(parts[2]),
                         'heading': float(parts[3]),
                         'altitude': float(parts[0]),
-                        'speed': float(parts[4]),   
+                        'speed': float(parts[4]),
                         'battery': float(parts[5]),
                     }
-                    
-                    # Only add data if conversion was successful
-                    gps_data['tracker1'].append(tracker1_data)
                     gps_data['tracker2'].append(tracker2_data)
-                    
                 except ValueError as ve:
-                    logging.error(f"Value error during conversion: {ve}")
-            return gps_data
+                    logging.error(f"Value error during conversion for tracker2: {ve}")
         except Exception as e:
-            logging.error(f"Error reading from serial port: {e}")
-    return None
+            logging.error(f"Error reading from tracker2: {e}")
+    return gps_data
 
 def get_current_time():
     return datetime.now().strftime('%H:%M:%S')
 
 @app.route('/')
-def index():    
+def index():
     return render_template('index.html')
 
 @app.route('/altitudegraph')
@@ -91,12 +101,12 @@ def releasepada():
     padaReleaseTime = request.args.get('time')
     print(padaReleaseAlt)
     print(padaReleaseTime)
-    return jsonify(message="released", altitude=padaReleaseAlt,time=padaReleaseTime)
+    return jsonify(message="released", altitude=padaReleaseAlt, time=padaReleaseTime)
 
-@app.route('/isPadaReleased')   
+@app.route('/isPadaReleased')
 def isPadaReleased():
     global padaReleaseAlt, padaReleaseTime
-    if isPadaReleased==True:
+    if isPadaReleased:
         return jsonify(altitude=padaReleaseAlt, time=padaReleaseTime)
     else:
         return jsonify(altitude=None, time=None)

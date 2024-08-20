@@ -118,11 +118,12 @@ var dataPoints1 = [];
 var dataPoints2 = [];
 var tracker1Coords = [];
 var tracker2Coords = [];
+var circles = [];
 var padaReleaseAlt = null;
 var padaReleaseTime = null;
 
 // Variables to store extracted data
-var tracker1Latitude, tracker1Longitude, tracker1Heading, tracker1Altitude, tracker1Speed, tracker1Battery;
+var tracker1Latitude, tracker1Longitude, tracker1Heading, tracker1Altitude, tracker1Speed, tracker1Battery, tracker1Pitch, tracker1BankAngle, tracker1NumberOfCircles, tracker1Circles;
 var tracker2Latitude, tracker2Longitude, tracker2Heading, tracker2Altitude, tracker2Speed, tracker2Battery;
 
 async function fetchDataAndUpdate() {
@@ -144,12 +145,20 @@ async function fetchDataAndUpdate() {
       longitude: point.longitude,
       heading: point.heading,
       altitude: point.altitude,
+      speed: point.speed,
+      battery: point.battery,
+      pitch: point.pitch,
+      bank_angle: point.bank_angle,
+      number_of_circles: point.number_of_circles,
+      circles: point.circles,
     }));
     tracker2Coords = data.tracker2.map(point => ({
       latitude: point.latitude,
       longitude: point.longitude,
       heading: point.heading,
       altitude: point.altitude,
+      speed: point.speed,
+      battery: point.battery,
     }));
 
     // Extracting individual variables
@@ -157,18 +166,21 @@ async function fetchDataAndUpdate() {
     tracker1Longitude = tracker1Coords[tracker1Coords.length - 1]?.longitude || 0;
     tracker1Heading = tracker1Coords[tracker1Coords.length - 1]?.heading || 0;
     tracker1Altitude = tracker1Coords[tracker1Coords.length - 1]?.altitude || 0;
+    tracker1Speed = tracker1Coords[tracker1Coords.length - 1]?.speed || 0;
+    tracker1Battery = tracker1Coords[tracker1Coords.length - 1]?.battery || 0;
+    tracker1Pitch = tracker1Coords[tracker1Coords.length - 1]?.pitch || 0;
+    tracker1BankAngle = tracker1Coords[tracker1Coords.length - 1]?.bank_angle || 0;
+    tracker1NumberOfCircles = tracker1Coords[tracker1Coords.length - 1]?.number_of_circles || 0;
+    tracker1Circles = tracker1Coords[tracker1Coords.length - 1]?.circles || [];
 
     tracker2Latitude = tracker2Coords[tracker2Coords.length - 1]?.latitude || 0;
     tracker2Longitude = tracker2Coords[tracker2Coords.length - 1]?.longitude || 0;
     tracker2Heading = tracker2Coords[tracker2Coords.length - 1]?.heading || 0;
     tracker2Altitude = tracker2Coords[tracker2Coords.length - 1]?.altitude || 0;
+    tracker2Speed = tracker2Coords[tracker2Coords.length - 1]?.speed || 0;
+    tracker2Battery = tracker2Coords[tracker2Coords.length - 1]?.battery || 0;
 
-    // Assuming speed and battery are also included in the data
-    tracker1Speed = data.tracker1[data.tracker1.length - 1]?.speed || 0;
-    tracker1Battery = data.tracker1[data.tracker1.length - 1]?.battery || 0;
-
-    tracker2Speed = data.tracker2[data.tracker2.length - 1]?.speed || 0;
-    tracker2Battery = data.tracker2[data.tracker2.length - 1]?.battery || 0;
+    console.log(circles);
 
     // Update Map
     plotPaths(tracker1Coords, tracker2Coords);
